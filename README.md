@@ -6,7 +6,12 @@ It allows users to **register**, **follow others**, **post tweets**, and
 **view a personalized feed** --- all optimized with **Redis caching**
 for fast performance.
 
-<img width="1920" height="1080" alt="Screenshot (134)" src="https://github.com/user-attachments/assets/43937579-9763-468b-ad33-f00147fd4516" />
+<img width="854" height="480" alt="Screenshot (134)" src="https://github.com/user-attachments/assets/43937579-9763-468b-ad33-f00147fd4516" />
+
+------------------------------------------------------------------------
+
+# 🎥 Live Demo
+https://drive.google.com/file/d/1Gxg7t3sZ08UwYwWcCns3lrT_DIqYMh35/view?usp=sharing
 
 ------------------------------------------------------------------------
 
