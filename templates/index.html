@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MiniTweet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-900 text-gray-100 min-h-screen">
+    <div class="max-w-2xl mx-auto p-6">
+      <h2 class="text-3xl font-bold text-center text-blue-400 mb-6">
+        MiniTweet
+      </h2>
+
+      <!-- Register -->
+      <div class="bg-gray-800 p-4 rounded-2xl mb-4 shadow">
+        <h5 class="text-lg font-semibold mb-2">Register</h5>
+        <input
+          id="username"
+          class="w-full p-2 rounded-md bg-gray-700 text-white mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Enter username"
+        />
+        <button
+          class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md"
+          onclick="registerUser()"
+        >
+          Register
+        </button>
+        <p id="registerResult" class="mt-2 text-green-400"></p>
+      </div>
+
+      <!-- Follow -->
+      <div class="bg-gray-800 p-4 rounded-2xl mb-4 shadow">
+        <h5 class="text-lg font-semibold mb-2">Follow</h5>
+        <input
+          id="followerId"
+          class="w-full p-2 rounded-md bg-gray-700 text-white mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Follower ID"
+        />
+        <input
+          id="followingId"
+          class="w-full p-2 rounded-md bg-gray-700 text-white mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Following ID"
+        />
+        <button
+          class="bg-indigo-500 hover:bg-indigo-600 px-4 py-2 rounded-md"
+          onclick="followUser()"
+        >
+          Follow
+        </button>
+        <p id="followResult" class="mt-2 text-green-400"></p>
+      </div>
+
+      <!-- Tweet -->
+      <div class="bg-gray-800 p-4 rounded-2xl mb-4 shadow">
+        <h5 class="text-lg font-semibold mb-2">Tweet</h5>
+        <input
+          id="tweetUserId"
+          class="w-full p-2 rounded-md bg-gray-700 text-white mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="User ID"
+        />
+        <textarea
+          id="tweetContent"
+          class="w-full p-2 rounded-md bg-gray-700 text-white mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="What's happening?"
+        ></textarea>
+        <button
+          class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-md"
+          onclick="postTweet()"
+        >
+          Tweet
+        </button>
+        <p id="tweetResult" class="mt-2 text-green-400"></p>
+      </div>
+
+      <!-- Feed -->
+      <div class="bg-gray-800 p-4 rounded-2xl mb-4 shadow">
+        <h5 class="text-lg font-semibold mb-2">Feed</h5>
+        <input
+          id="feedUserId"
+          class="w-full p-2 rounded-md bg-gray-700 text-white mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="User ID"
+        />
+        <button
+          class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-md mb-3"
+          onclick="loadFeed()"
+        >
+          Load Feed
+        </button>
+        <div id="feedContainer" class="space-y-3"></div>
+      </div>
+    </div>
+
+    <script>
+      const baseUrl = "http://127.0.0.1:5000";
+
+      async function registerUser() {
+        const username = document.getElementById("username").value;
+        const res = await fetch(`${baseUrl}/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username }),
+        });
+        const data = await res.json();
+        document.getElementById("registerResult").innerText =
+          "User registered with ID: " + data.user_id;
+      }
+
+      async function followUser() {
+        const follower_id = document.getElementById("followerId").value;
+        const following_id = document.getElementById("followingId").value;
+        const res = await fetch(`${baseUrl}/follow`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ follower_id, following_id }),
+        });
+        const data = await res.json();
+        document.getElementById("followResult").innerText = data.status;
+      }
+
+      async function postTweet() {
+        const user_id = document.getElementById("tweetUserId").value;
+        const content = document.getElementById("tweetContent").value;
+        const res = await fetch(`${baseUrl}/tweet`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id, content }),
+        });
+        const data = await res.json();
+        document.getElementById("tweetResult").innerText =
+          "Tweet posted with ID: " + data.tweet_id;
+      }
+
+      async function loadFeed() {
+        const user_id = document.getElementById("feedUserId").value;
+        const res = await fetch(`${baseUrl}/feed/${user_id}`);
+        const data = await res.json();
+        const feedContainer = document.getElementById("feedContainer");
+        feedContainer.innerHTML = "";
+
+        data.feed.forEach((tweet) => {
+          let tweetData = tweet;
+          if (typeof tweet === "string") {
+            const parts = tweet.split(":");
+            tweetData = {
+              tweet_id: parts[0],
+              content: parts[1],
+              created_at: parts[2],
+            };
+          }
+
+          const div = document.createElement("div");
+          div.className = "border p-2 mb-2 bg-light";
+          div.innerHTML = `
+    <strong>Tweet ID:</strong> ${tweetData.tweet_id}<br>
+    <strong>Content:</strong> ${tweetData.content}<br>
+    <small>${tweetData.created_at}</small>
+  `;
+          feedContainer.appendChild(div);
+        });
+      }
+    </script>
+  </body>
+</html>
